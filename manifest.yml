@@ -1,0 +1,76 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: NAME
+  namespace: NAMESPACE
+spec:
+  selector:
+    matchLabels:
+      app: SELECTOR
+  replicas: 1
+  strategy:
+    type: RollingUpdate
+    rollingUpdate:
+      maxUnavailable: 0
+  minReadySeconds: 15
+  template:
+    metadata:
+      labels:
+        app: SELECTOR
+    spec:
+      containers:
+      - name: NAME
+        image: REGISTRY/NAMESPACE/APP:1.1.1
+        env:
+        - name: NODE_ENV
+          value: production
+        - name: TOKEN
+          valueFrom:
+            secretKeyRef:
+              name: my-secret
+              key: KEY
+        imagePullPolicy: Always
+        resources:
+          requests:
+            memory: "65M"
+            cpu: "30m"
+          limits:
+            memory: "100M"
+            cpu: "50m"
+      imagePullSecrets:
+      - name: regcred
+---
+kind: Service
+apiVersion: v1
+metadata:
+  name: NAME-SERVICE
+spec:
+  selector:
+    app: SELECTOR
+  type: ClusterIP
+  ports:
+  - name: PORT
+    port: 80
+    targetPort: 8080
+---
+apiVersion: networking.k8s.io/v1beta1
+kind: Ingress
+metadata:
+  name: NAME
+  namespace: NAMESPACE
+  annotations:
+    kubernetes.io/ingress.class: "nginx"
+    cert-manager.io/cluster-issuer: "letsencrypt-prod"
+spec:
+  tls:
+  - hosts:
+    - DOMAIN
+    secretName: DOMAIN-tls
+  rules:
+  - host: DOMAIN
+    http:
+      paths:
+      - path: /
+        backend:
+          serviceName: NAME-SERVICE
+          servicePort: 80
