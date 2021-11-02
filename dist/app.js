@@ -51,7 +51,7 @@ const main = () => (0, tslib_1.__awaiter)(void 0, void 0, void 0, function* () {
         }), 1000 / concurrentRequests);
     }
     else {
-        console.log('You have to specify a url with --url (-h for help)');
+        console.log('You have to specify a url with --url and requests with -r (-h for help)');
     }
 });
 main();
