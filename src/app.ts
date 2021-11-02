@@ -56,7 +56,7 @@ const main = async () => {
             }
         }, 1000 / concurrentRequests);
     } else {
-        console.log('You have to specify a url with --url (-h for help)');
+        console.log('You have to specify a url with --url and requests with -r (-h for help)');
     }
 };
 
